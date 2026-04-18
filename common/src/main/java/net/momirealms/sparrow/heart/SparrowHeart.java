@@ -40,10 +40,34 @@ public abstract class SparrowHeart {
     private static class SingletonHolder {
         private static final SparrowHeart INSTANCE = getHeart();
 
+        public static String extractVersion(String s) {
+            if (s == null || s.isEmpty()) {
+                return "";
+            }
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(i);
+                if (Character.isDigit(c)) {
+                    sb.append(c);
+                } else if (c == '.') {
+                    if (i + 1 < s.length() && Character.isDigit(s.charAt(i + 1))) {
+                        sb.append(c);
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+            return sb.toString();
+        }
+
         public static SparrowHeart getHeart() {
             String bukkitVersion = Bukkit.getServer().getBukkitVersion().split("-")[0];
             String packageName;
-            switch (bukkitVersion) {
+            switch (extractVersion(bukkitVersion)) {
+                case "26.1", "26.1.2", "26.1.1" -> packageName = "r26_1";
                 case "1.21.11" -> packageName = "reobf_1_21_r7";
                 case "1.21.9", "1.21.10" -> packageName = "reobf_1_21_r6";
                 case "1.21.6", "1.21.7", "1.21.8" -> packageName = "reobf_1_21_r5";
@@ -61,7 +85,7 @@ public abstract class SparrowHeart {
                 case "1.18.2" -> packageName = "reobf_1_18_r2";
                 case "1.18.1", "1.18" -> packageName = "reobf_1_18_r1";
                 case "1.17.1" -> packageName = "reobf_1_17_r1";
-                default -> throw new UnsupportedVersionException();
+                default -> throw new UnsupportedOperationException(extractVersion(bukkitVersion));
             }
             try {
                 Class<?> clazz = Class.forName("net.momirealms.sparrow.heart.impl." + packageName + ".Heart");
