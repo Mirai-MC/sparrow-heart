@@ -17,6 +17,18 @@ subprojects {
         maven("https://repo.papermc.io/repository/maven-public/")
     }
 
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+        disableAutoTargetJvm()
+    }
+
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        options.release.set(21)
+    }
+
     if ("heart" == project.name) {
         tasks.shadowJar {
             destinationDirectory.set(file("$rootDir/target"))
