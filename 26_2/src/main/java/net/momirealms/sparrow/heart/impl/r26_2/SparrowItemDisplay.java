@@ -1,4 +1,4 @@
-package net.momirealms.sparrow.heart.impl.r26_1;
+package net.momirealms.sparrow.heart.impl.r26_2;
 
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
@@ -9,37 +9,27 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.phys.Vec3;
-import net.momirealms.sparrow.heart.feature.entity.display.FakeTextDisplay;
-import net.momirealms.sparrow.heart.util.ColorUtils;
+import net.momirealms.sparrow.heart.feature.entity.display.FakeItemDisplay;
 import net.momirealms.sparrow.heart.util.SelfIncreaseEntityID;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.craftbukkit.util.CraftChatMessage;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SparrowTextDisplay implements FakeTextDisplay {
+public class SparrowItemDisplay implements FakeItemDisplay {
+
     private final Location location;
-    private String name;
+    private ItemStack item;
     private final int entityID = SelfIncreaseEntityID.getAndIncrease();
     private final UUID uuid = UUID.randomUUID();
-    private int rgba;
 
-    public SparrowTextDisplay(Location location) {
+    public SparrowItemDisplay(Location location) {
         this.location = location;
-    }
-
-    @Override
-    public void rgba(int r, int g, int b, int a) {
-        this.rgba = ColorUtils.rgbaToDecimal(r, g, b, a);
-    }
-
-    @Override
-    public void name(String json) {
-        this.name = json;
     }
 
     @Override
@@ -55,9 +45,10 @@ public class SparrowTextDisplay implements FakeTextDisplay {
         ClientboundAddEntityPacket entityPacket = new ClientboundAddEntityPacket(
                 entityID, uuid,
                 location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw(),
-                EntityTypes.TEXT_DISPLAY, 0,
+                EntityTypes.ITEM_DISPLAY, 0,
                 Vec3.ZERO, 0
         );
+
         ArrayList<Packet<? super ClientGamePacketListener>> packets = new ArrayList<>(List.of(entityPacket, getMetaPacket()));
         ClientboundBundlePacket packet = new ClientboundBundlePacket(packets);
         serverPlayer.connection.send(packet);
@@ -71,12 +62,13 @@ public class SparrowTextDisplay implements FakeTextDisplay {
 
     private ClientboundSetEntityDataPacket getMetaPacket() {
         ArrayList<SynchedEntityData.DataValue<?>> values = new ArrayList<>();
-        values.add(SynchedEntityData.DataValue.create(new EntityDataAccessor<>(15, EntityDataSerializers.BYTE), (byte) 3));
-        values.add(SynchedEntityData.DataValue.create(new EntityDataAccessor<>(23, EntityDataSerializers.COMPONENT), CraftChatMessage.fromJSON(name)));
-        values.add(SynchedEntityData.DataValue.create(new EntityDataAccessor<>(25, EntityDataSerializers.INT), rgba));
-        values.add(SynchedEntityData.DataValue.create(new EntityDataAccessor<>(26, EntityDataSerializers.BYTE), (byte) -1));
-        values.add(SynchedEntityData.DataValue.create(new EntityDataAccessor<>(27, EntityDataSerializers.BYTE), (byte) 0));
+        values.add(SynchedEntityData.DataValue.create(new EntityDataAccessor<>(23, EntityDataSerializers.ITEM_STACK), CraftItemStack.asNMSCopy(item)));
         return new ClientboundSetEntityDataPacket(entityID, values);
+    }
+
+    @Override
+    public void item(ItemStack itemStack) {
+        this.item = itemStack;
     }
 
     @Override
