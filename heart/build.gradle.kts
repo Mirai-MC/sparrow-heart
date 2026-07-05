@@ -27,6 +27,7 @@ java {
 tasks {
     shadowJar {
         from(zipTree(project(":26_1").tasks.jar.get().archiveFile))
+        from(zipTree(project(":26_2").tasks.jar.get().archiveFile))
         archiveClassifier = ""
         archiveFileName = "${rootProject.name}-${projectVersion}.jar"
         destinationDirectory.set(file("$rootDir/target"))
