@@ -395,7 +395,7 @@ public class Heart extends SparrowHeart {
                             new Vec3(location.getX(), location.getY(), location.getZ()),
                             new Vec3(motion.getX(), motion.getY(), motion.getZ()),
                             location.getYaw(), location.getPitch(),
-                            false, false, Set.of(), (entity -> {}), PlayerTeleportEvent.TeleportCause.PLUGIN
+                            false, false, Set.of(), (entity -> {})
                     )),
                     Set.of(),
                     false
