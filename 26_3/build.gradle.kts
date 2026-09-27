@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:26.3.build.+")
     compileOnly(project(":common"))
 }
 

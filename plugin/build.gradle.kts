@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
     compileOnly(project(":common"))
-    implementation(project(":heart"))
+    implementation(project(mapOf("path" to ":heart", "configuration" to "shadow")))
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 }
 
